@@ -5,16 +5,16 @@
 </head>
 <body>
 <script>
-const images = [
-  "1.png",
-  "2.png"
-];
+fetch('images.json')
+  .then(response => response.json())
+  .then(images => {
+      const randomImage =
+          images[Math.floor(Math.random() * images.length)];
 
-const randomImage =
-    images[Math.floor(Math.random() * images.length)];
-
-window.location.href =
-    "images/" + randomImage;
+      window.location.replace(
+          'images/' + randomImage
+      );
+  });
 </script>
 </body>
 </html>
