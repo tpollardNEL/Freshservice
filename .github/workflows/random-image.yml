@@ -1,6 +1,8 @@
 name: Rotate Current Image
 
 on:
+  schedule:
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -13,18 +15,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pick random image
+      - name: Pick random image (different from current)
         run: |
-          FILE=$(find images -name "*.png" | shuf -n 1)
-          cp "$FILE" current.png
+          CURRENT_HASH=$(sha256sum current.png | cut -d' ' -f1)
 
-      - name: Commit
+          while true; do
+            FILE=$(find images -name "*.png" | shuf -n 1)
+            NEW_HASH=$(sha256sum "$FILE" | cut -d' ' -f1)
+
+            if [ "$CURRENT_HASH" != "$NEW_HASH" ]; then
+              echo "Selected: $FILE"
+              cp "$FILE" current.png
+              break
+            fi
+          done
+
+      - name: Commit changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
           git add current.png
 
-          git diff --staged --quiet || git commit -m "Random image"
+          git diff --staged --quiet || git commit -m "Rotate image"
 
           git push
