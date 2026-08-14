@@ -1,0 +1,30 @@
+name: Rotate Current Image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rotate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick random image
+        run: |
+          FILE=$(find images -name "*.png" | shuf -n 1)
+          cp "$FILE" current.png
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add current.png
+
+          git diff --staged --quiet || git commit -m "Random image"
+
+          git push
