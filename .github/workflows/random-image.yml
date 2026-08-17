@@ -2,7 +2,7 @@ name: Rotate Current Image
 
 on:
   schedule:
-    - cron: '0 */4 * * *'
+    - cron: '0 12,16,20 * * 1-5'
   workflow_dispatch:
 
 permissions:
